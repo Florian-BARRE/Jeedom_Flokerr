@@ -1,0 +1,9 @@
+flo_flat/lounge/shelf/
+home/lounge/thermostat/
+home/flo_bedroom/door/
+home/gate/
+home/flo_bedroom/desk/
+flo_flat/lounge/mirror/
+home/flo_bedroom/chandelier/
+home/flo_bedroom/bed/
+flo_flat/lounge/ceiling/

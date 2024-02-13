@@ -1,0 +1,15 @@
+version: '1'
+services:
+  app:
+    environment:
+      WS_URI: *
+      TOPICS_PATH: *
+      STATES_PATH: *
+      DEVICES_PATH: *
+      PING_WS_CLIENTS_INTERVAL: *
+      ENABLE_EXTRA_PING_INFO: *
+      PRIORITY_DEBUG_LEVEL: *
+
+    build: .
+    volumes:
+      - /flokerr_data:/flokerr_data
