@@ -11,22 +11,31 @@ from tasks.devices_info_updates_manager import devices_info_updates_routine
 
 
 async def main():
-    async with websockets.connect(APP_CONFIG.WS_URI) as websocket:
-        # Authenticate
-        if not await authentication_request(websocket):
-            return
+    while True:
+        try:
+            async with websockets.connect(APP_CONFIG.WS_URI) as websocket:
+                # Authenticate
+                if not await authentication_request(websocket):
+                    return
 
-        # Subscribe to topics
-        dprint("Subscribe to all topics.", priority_level=1, preprint="\n\n")
-        await subscribe_to_topics(websocket)
+                # Subscribe to topics
+                dprint("Subscribe to all topics.", priority_level=1, preprint="\n\n")
+                await subscribe_to_topics(websocket)
 
-        # Create all coroutines (message_receiver_supervisor / states_updater / devices_info_updater)
-        msg_receiver = asyncio.create_task(ws_receiver.ws_receiver_routine(websocket))
-        states_updater = asyncio.create_task(states_updates_routine())
-        devices_info_updater = asyncio.create_task(devices_info_updates_routine(websocket))
+                # Create all coroutines (message_receiver_supervisor / states_updater / devices_info_updater)
+                msg_receiver = asyncio.create_task(ws_receiver.ws_receiver_routine(websocket))
+                states_updater = asyncio.create_task(states_updates_routine())
+                devices_info_updater = asyncio.create_task(devices_info_updates_routine(websocket))
 
-        # Start coroutines
-        await asyncio.gather(msg_receiver, states_updater, devices_info_updater)
+                # Start coroutines
+                await asyncio.gather(msg_receiver, states_updater, devices_info_updater)
+
+        except websockets.exceptions.ConnectionClosedError:
+            dprint("Connection closed, retrying in 5s...", priority_level=1)
+            await asyncio.sleep(5)
+        except Exception as e:
+            dprint(f"An error occurred: {e}", priority_level=1)
+            await asyncio.sleep(5)
 
 
 if __name__ == "__main__":
